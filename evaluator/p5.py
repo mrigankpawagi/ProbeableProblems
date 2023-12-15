@@ -31,33 +31,31 @@ def eval(data: list, key) -> str:
     """
     Return the AIC that the student's solution misses.
     """
+    AIC = set()
     expected = sol(data, key)
     actual = reorder(data, key)
 
     # AIC 1: key is NaN
     if math.isnan(key):
-        if expected != actual:
-            return "nan key"
+        if expected != actual: AIC.add("nan key")
     
     # AIC 2: Key is smaller than all numbers in list or bigger than all numbers in list
     if key < min(data) or key > max(data):
-        if expected != actual:
-            return "outside"
+        if expected != actual: AIC.add("outside")
     
     # AIC 3: Ordering if key is between the smallest and largest number in list but not in list
     if min(data) < key < max(data) and key not in data:
-        if expected != actual:
-            return "between"
+        if expected != actual: AIC.add("not in list")
     
     # AIC 4: Ordering if key appears more than once in list
     if data.count(key) > 1:
-        if expected != actual:
-            return "repeated key"
+        if expected != actual: AIC.add("repeated key")
     
     # AIC 5: NaN is in list
     if any(math.isnan(x) for x in data):
-        if expected != actual:
-            return "nan in list"
+        if expected != actual: AIC.add("nan in list")
+        
+    return AIC
 
 score = set()
 
@@ -65,9 +63,7 @@ score = set()
 @settings(max_examples=1000)
 def test(data: list, key):
     global score
-    AIC = eval(data, key)
-    if AIC:
-        score.add(AIC)
+    score.update(eval(data, key))
 
 test()
 print(len(score))
