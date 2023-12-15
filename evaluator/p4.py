@@ -34,13 +34,14 @@ def eval(price: list[int]) -> str:
     """
     Return the AIC that the student's solution misses.
     """
+    AIC = set()
     expected = sol(price)
     actual = max_profit(price)
     
     if not price:
          # AIC 1: Empty list
         if expected != actual:
-            return "empty"
+            return {"empty"}
 
     max_profit = None
     best_buy = None
@@ -53,8 +54,7 @@ def eval(price: list[int]) -> str:
                     
                     # AIC 2: No profit no loss case
                     if profit == 0:
-                        if expected == (i, j) != actual:
-                            return "no profit"
+                        if expected == (i, j) != actual: AIC.add("no profit")
                     
                     if max_profit is None or profit > max_profit:
                         max_profit = profit
@@ -64,23 +64,22 @@ def eval(price: list[int]) -> str:
                         
                         # AIC 3: Break ties based on range
                         if (j - i < best_sell - best_buy):
-                            if expected == (i, j) != actual:
-                                return "range"
+                            if expected == (i, j) != actual: AIC.add("range")
                             best_buy = i
                             best_sell = j
                         
                         else:
                             # AIC 4: Break ties based on early sell
                             if (j - i == best_sell - best_buy and j < best_sell):
-                                if expected == (i, j) != actual:
-                                    return "early sell"
+                                if expected == (i, j) != actual: AIC.add("early sell")
                                 best_buy = i
                                 best_sell = j
     
     # AIC 5: No positive pair in list
     if max_profit is None:
-        if expected != actual:
-            return "no positive"
+        if expected != actual: AIC.add("no positive")
+    
+    return AIC
 
 score = set()
 
@@ -88,9 +87,7 @@ score = set()
 @settings(max_examples=1000)
 def test(price: list[int]):
     global score
-    AIC = eval(price)
-    if AIC:
-        score.add(AIC)
+    score.update(eval(price))
 
 test()
 print(len(score))
