@@ -21,6 +21,7 @@ def eval(data: list[int]) -> str:
     """
     Return the AIC that the student's solution misses.
     """
+    AIC = set()
     expected = sol(data)
     actual = min_freq(data)
     
@@ -28,8 +29,9 @@ def eval(data: list[int]) -> str:
     least_freq = min(data.count(n) for n in set(data))
     nums_with_least_freq = [n for n in set(data) if data.count(n) == least_freq]
     if len(nums_with_least_freq) > 1:
-        if expected != actual:
-            return "multiple least"
+        if expected != actual: AIC.add("multiple least")
+    
+    return AIC
 
 score = set()
 
@@ -37,9 +39,7 @@ score = set()
 @settings(max_examples=1000)
 def test(data: list[int]):
     global score
-    AIC = eval(data)
-    if AIC:
-        score.add(AIC)
+    score.update(eval(data))
 
 test()
 print(len(score))
