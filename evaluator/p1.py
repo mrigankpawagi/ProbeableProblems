@@ -22,8 +22,12 @@ def eval(data: list[int]) -> set[str]:
     expected = sol(data)
     actual = least_positive_index(data)
     
-    # AIC 1: no positive integer in list
-    if all(n <= 0 for n in data):
+    # AIC 1a: no positive integer in list (empty list)
+    if not data:
+        if expected != actual: AIC.add("empty list")
+
+    # AIC 1b: no positive integer in list (non-empty list)
+    if data and all(n <= 0 for n in data):
         if expected != actual: AIC.add("no positive")
             
     # AIC 2: smallest positive integer appears more than once
