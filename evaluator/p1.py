@@ -35,6 +35,9 @@ def eval(data: list[int]) -> set[str]:
         if any(n > 0 for n in data) and data.count(min(n for n in data if n > 0)) > 1:
             AIC.add("repeated smallest")
 
+        if not AIC:
+            AIC.add("unknown")
+
     return AIC
         
 score = set()
