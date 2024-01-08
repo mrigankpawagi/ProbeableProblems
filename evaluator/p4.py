@@ -37,53 +37,39 @@ def eval(price: list[int]) -> str:
     AIC = set()
     expected = sol(price)
     actual = max_profit(price)
-    
-    if not price:
-         # AIC 1: Empty list
-        if expected != actual:
-            return {"empty"}
 
-    max_profit = None
-    best_buy = None
-    best_sell = None
-    for i in range(len(price) - 1):
-        for j in range(i + 1, len(price)):
-            if price[i] > 0 and price[j] > 0:
-                profit = price[j] - price[i]
-                if profit >= 0:
-                    
-                    # AIC 2: No profit no loss case
-                    if profit == 0:
-                        if expected == (i, j) != actual: AIC.add("no profit")
-                    
-                    if max_profit is None or profit > max_profit:
-                        max_profit = profit
-                        best_buy = i
-                        best_sell = j
-                    elif profit == max_profit:
-                        
-                        # AIC 3: Break ties based on range
-                        if (j - i < best_sell - best_buy):
-                            if expected == (i, j) != actual: AIC.add("range")
-                            best_buy = i
-                            best_sell = j
-                        
-                        else:
-                            # AIC 4: Break ties based on early sell
-                            if (j - i == best_sell - best_buy and j < best_sell):
-                                if expected == (i, j) != actual: AIC.add("early sell")
-                                best_buy = i
-                                best_sell = j
-    
-    # AIC 5: No positive pair in list
-    if max_profit is None:
-        if expected != actual: AIC.add("no positive")
-    
+    if expected != actual:
+        if not price:
+            # AIC 1: Empty list
+            AIC.add("empty list")
+        elif not isinstance(actual, tuple) or len(actual) != 2:
+            AIC.add("unknown")
+        else:
+            buy_expected, sell_expected = expected
+            buy_actual, sell_actual = actual
+            if buy_actual < 0 or buy_actual > sell_actual or sell_actual >= len(price) or\
+            price[sell_actual] - price[buy_actual] < price[sell_expected] - price[buy_expected]:
+                AIC.add("unknown")
+            else:
+                if price[buy_actual] <= 0 or price[sell_actual] <= 0:
+                    # AIC 2: Positive price
+                    AIC.add("positive price")
+                elif expected == (0, 0):
+                    # AIC 3: No profit
+                    AIC.add("no profit")
+                else:
+                    if sell_actual - buy_actual > sell_expected - buy_expected:
+                        # AIC 4: Narrow range
+                        AIC.add("narrow range")
+                    if sell_actual > sell_expected:
+                        # AIC 5: Early sell
+                        AIC.add("early sell")
+
     return AIC
 
 score = set()
 
-@given(st.lists(st.integers()))
+@given(st.lists(st.integers(), max_size=7))
 @settings(max_examples=1000)
 def test(price: list[int]):
     global score
