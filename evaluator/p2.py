@@ -52,7 +52,7 @@ def eval(s: str) -> set[str]:
         
 score = set()
 
-@given(st.text(alphabet="ab0-123"))
+@given(st.text(alphabet="-., b013", max_size=7))
 @settings(max_examples=1000)
 def test(s: str):
     global score
