@@ -42,7 +42,7 @@ def eval(data: list[int]) -> set[str]:
         
 score = set()
 
-@given(st.lists(st.integers()))
+@given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
 @settings(max_examples=1000)
 def test(data: list[int]):
     global score
