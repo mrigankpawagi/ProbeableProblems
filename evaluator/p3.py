@@ -17,25 +17,28 @@ def sol(data: list[int]) -> int:
             result_count = c
     return result
 
-def eval(data: list[int]) -> str:
+def eval(data: list[int]) -> set[str]:
     """
     Return the AIC that the student's solution misses.
     """
     AIC = set()
     expected = sol(data)
     actual = min_freq(data)
-    
-    # AIC 1: More than one integer appears least often
-    least_freq = min(data.count(n) for n in set(data))
-    nums_with_least_freq = [n for n in set(data) if data.count(n) == least_freq]
-    if len(nums_with_least_freq) > 1:
-        if expected != actual: AIC.add("multiple least")
+
+    if expected != actual:
+        # AIC 1: More than one integer appears least often
+        least_freq = data.count(result)
+        num_with_least_freq = sum(1 for n in set(data) if data.count(n) == least_freq)
+        if num_with_least_freq > 1:
+            AIC.add("multiple least frequent")
+        else:
+            AIC.add("unknown")
     
     return AIC
 
 score = set()
 
-@given(st.lists(st.integers()))
+@given(st.lists(st.integers(), min_size=1))
 @settings(max_examples=1000)
 def test(data: list[int]):
     global score
