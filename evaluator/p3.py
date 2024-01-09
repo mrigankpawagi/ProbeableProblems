@@ -28,10 +28,12 @@ def eval(data: list[int]) -> set[str]:
     if expected != actual:
         # AIC 1: More than one integer appears least often
         least_freq = data.count(result)
-        num_with_least_freq = sum(1 for n in set(data) if data.count(n) == least_freq)
+        num_with_least_freq = sum(data.count(n) == least_freq for n in set(data))
         if num_with_least_freq > 1:
+            # AIC 1: More than one least frequent number
             AIC.add("multiple least frequent")
-        else:
+
+        if not AIC:
             AIC.add("unknown")
     
     return AIC
