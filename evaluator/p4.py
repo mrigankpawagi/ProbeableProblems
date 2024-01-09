@@ -42,15 +42,11 @@ def eval(price: list[int]) -> str:
         if not price:
             # AIC 1: Empty list
             AIC.add("empty list")
-        elif not isinstance(actual, tuple) or len(actual) != 2:
-            AIC.add("unknown")
-        else:
+        elif isinstance(actual, tuple) and len(actual) == 2:
             buy_expected, sell_expected = expected
             buy_actual, sell_actual = actual
-            if buy_actual < 0 or buy_actual > sell_actual or sell_actual >= len(price) or\
-            price[sell_actual] - price[buy_actual] < price[sell_expected] - price[buy_expected]:
-                AIC.add("unknown")
-            else:
+            if buy_actual >= 0 and buy_actual <= sell_actual and sell_actual < len(price) and\
+            price[sell_actual] - price[buy_actual] >= price[sell_expected] - price[buy_expected]:
                 if price[buy_actual] <= 0 or price[sell_actual] <= 0:
                     # AIC 2: Positive price
                     AIC.add("positive price")
@@ -64,6 +60,9 @@ def eval(price: list[int]) -> str:
                     if sell_actual > sell_expected:
                         # AIC 5: Early sell
                         AIC.add("early sell")
+
+        if not AIC:
+            AIC.add("unknown")
 
     return AIC
 
