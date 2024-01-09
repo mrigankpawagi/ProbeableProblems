@@ -35,26 +35,29 @@ def eval(data: list, key) -> str:
     expected = sol(data, key)
     actual = reorder(data, key)
 
-    # AIC 1: key is NaN
-    if math.isnan(key):
-        if expected != actual: AIC.add("nan key")
-    
-    # AIC 2: Key is smaller than all numbers in list or bigger than all numbers in list
-    if key < min(data) or key > max(data):
-        if expected != actual: AIC.add("outside")
-    
-    # AIC 3: Ordering if key is between the smallest and largest number in list but not in list
-    if min(data) < key < max(data) and key not in data:
-        if expected != actual: AIC.add("not in list")
-    
-    # AIC 4: Ordering if key appears more than once in list
-    if data.count(key) > 1:
-        if expected != actual: AIC.add("repeated key")
-    
-    # AIC 5: NaN is in list
-    if any(math.isnan(x) for x in data):
-        if expected != actual: AIC.add("nan in list")
-        
+    if expected != actual:
+        if math.isnan(key):
+            # AIC 1: key is nan
+            AIC.add("nan key")
+        else:
+            expected_filtered = [x for x in expected if not math.isnan(x) and x != key]
+            actual_filtered = [x for x in actual if not math.isnan(x) and x != key]
+            if expected_filtered != actual_filtered:
+                num_small = sum(x < key for x in expected_filtered)
+                if sorted(expected_filtered[:num_small]) == sorted(actual_filtered[:num_small]) and\
+                sorted(expected_filtered[num_small:]) == sorted(actual_filtered[num_small:]):
+                    # AIC 2: Order of elements
+                    AIC.add("order")
+            else:
+                if any(math.isnan(x) for x in data):
+                    # AIC 3: Position of nan in result
+                    AIC.add("nan position")
+                if key in data:
+                    # AIC 4: Position of key in result
+                    AIC.add("key position")
+        if not AIC:
+            AIC.add("unknown")
+                
     return AIC
 
 score = set()
