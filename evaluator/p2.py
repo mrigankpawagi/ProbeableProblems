@@ -45,8 +45,8 @@ def eval(s: str) -> set[str]:
             if first_positive_integer(s_no_suffix) == actual:
                 AIC.add("suffix")
 
-            if not AIC:
-                AIC.add("unknown")
+        if not AIC:
+            AIC.add("unknown")
 
     return AIC       
         
