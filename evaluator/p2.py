@@ -45,7 +45,8 @@ def eval(s: str) -> set[str]:
             if first_positive_integer(s_no_suffix) == actual:
                 AIC.add("suffix")
             # AIC 4: More than one digit in expected
-            if len(expected_str) > 1:
+            actual_str = str(actual)
+            if actual_str in expected_str and len(actual_str) < len(expected_str) and len(expected_str) > 1:
                 AIC.add("multi digit")
 
         if not AIC:
