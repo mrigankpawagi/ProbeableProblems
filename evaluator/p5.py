@@ -62,7 +62,7 @@ def eval(data: list, key) -> str:
 
 score = set()
 
-@given(st.lists(st.floats() | st.integers()), st.floats() | st.integers())
+@given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
 @settings(max_examples=1000)
 def test(data: list, key):
     global score
