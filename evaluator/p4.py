@@ -48,17 +48,20 @@ def eval(price: list[int]) -> str:
             if buy_actual >= 0 and buy_actual <= sell_actual and sell_actual < len(price) and\
             price[sell_actual] - price[buy_actual] >= price[sell_expected] - price[buy_expected]:
                 if price[buy_actual] <= 0 or price[sell_actual] <= 0:
-                    # AIC 2: Positive price
-                    AIC.add("positive price")
+                    # AIC 2: Non-positive price
+                    AIC.add("non-positive price")
                 elif expected == (0, 0):
-                    # AIC 3: No profit
-                    AIC.add("no profit")
+                    # AIC 3: No break-even
+                    AIC.add("no break-even")
+                elif buy_expected != sell_expected and price[buy_expected] == price[sell_expected]:
+                    # AIC 4: Only break-even
+                    AIC.add("break even")
                 else:
                     if sell_actual - buy_actual > sell_expected - buy_expected:
-                        # AIC 4: Narrow range
+                        # AIC 5: Narrow range
                         AIC.add("narrow range")
                     if sell_actual > sell_expected:
-                        # AIC 5: Early sell
+                        # AIC 6: Early sell
                         AIC.add("early sell")
 
         if not AIC:
