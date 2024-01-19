@@ -7,26 +7,26 @@ results = []
 
 for Q in range(1, NUM_QUESTIONS + 1):
     
-    # check if code/qQ/buggy exists
-    buggy_path = f"code/q{Q}/buggy"
-    if not os.path.exists(buggy_path):
-        print(f"q{Q} buggy not found")
-        continue
+    for status in ["buggy", "ok"]:
+        # check if code/qQ/status exists
+        path = f"code/q{Q}/{status}"
+        if not os.path.exists(path):
+            continue
 
-    # iterate through all the files in code/qQ/buggy
-    for filename in os.listdir(buggy_path):
-        if filename.endswith(".py"):
-            buggy_file = os.path.join(buggy_path, filename)
-            team, attempt = filename.split("_")
-            
-            # copy the file into evaluator/ as "submission.py"
-            os.system(f"cp {buggy_file} evaluator/submission.py")
-            
-            # run the evaluator and capture the output from stdout
-            output = os.popen(f"python evaluator/p{Q}.py").read()
-            
-            # write to results
-            results.append((Q, team, attempt, output, "buggy"))
+        # iterate through all the files in code/qQ/status
+        for filename in os.listdir(path):
+            if filename.endswith(".py"):
+                file = os.path.join(path, filename)
+                team, attempt = filename.split("_")
+                
+                # copy the file into evaluator/ as "submission.py"
+                os.system(f"cp {file} evaluator/submission.py")
+                
+                # run the evaluator and capture the output from stdout
+                output = eval(os.popen(f"python evaluator/p{Q}.py").read().strip())
+                
+                # write to results
+                results.append((Q, team, attempt, output, status))
             
 # delete the file from evaluator/
 os.system("rm evaluator/submission.py")
