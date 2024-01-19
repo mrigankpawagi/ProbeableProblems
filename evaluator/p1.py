@@ -56,4 +56,4 @@ def test(data: list[int]):
         pass
 
 test()
-print(len(score))
+print(sorted(list(score)))

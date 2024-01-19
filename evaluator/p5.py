@@ -77,4 +77,4 @@ def test(data: list, key):
         pass
 
 test()
-print(len(score))
+print(sorted(list(score)))

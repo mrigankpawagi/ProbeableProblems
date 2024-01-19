@@ -71,4 +71,4 @@ def test(s: str):
         pass
 
 test()
-print(len(score))
+print(sorted(list(score)))
