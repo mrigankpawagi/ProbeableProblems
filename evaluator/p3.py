@@ -5,7 +5,7 @@ https://codecheck.io/files/23061110151rresbylu6oa8y2va3dxdesx9
 """
 
 from submission import min_freq
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings, strategies as st, example
 
 def sol(data: list[int]) -> int:
     result = data[0]
@@ -40,8 +40,12 @@ def eval(data: list[int]) -> set[str]:
 
 score = set()
 
-@given(st.lists(st.integers(min_value=-10, max_value=10), min_size=1, max_size=7))
+@example(data=[-76])
+@example(data=[-1, -1])
+@example(data=[2, 1, 2, 1])
+@example(data=[1, 2, 1, 2])
 @settings(max_examples=1000)
+@given(st.lists(st.integers(min_value=-10, max_value=10), min_size=1, max_size=7))
 def test(data: list[int]):
     global score
     score.update(eval(data))
