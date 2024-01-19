@@ -65,7 +65,10 @@ score = set()
 @given(st.text(alphabet="-., b013", max_size=7))
 def test(s: str):
     global score
-    score.update(eval(s))
+    try:
+        score.update(eval(s))
+    except:
+        pass
 
 test()
 print(len(score))

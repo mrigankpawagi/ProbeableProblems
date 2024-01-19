@@ -71,7 +71,10 @@ score = set()
 @given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
 def test(data: list, key):
     global score
-    score.update(eval(data, key))
+    try:
+        score.update(eval(data, key))
+    except:
+        pass
 
 test()
 print(len(score))

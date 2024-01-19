@@ -81,7 +81,10 @@ score = set()
 @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=7))
 def test(price: list[int]):
     global score
-    score.update(eval(price))
+    try:
+        score.update(eval(price))
+    except:
+        pass
 
 test()
 print(len(score))
