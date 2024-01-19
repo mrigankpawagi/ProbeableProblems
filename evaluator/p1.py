@@ -5,7 +5,7 @@ https://codecheck.io/files/2306111033cnnmzafkxveg0ap6i7blj01f0
 """
 
 from submission import least_positive_index
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings, strategies as st, example
 
 def sol(data: list[int]) -> int:
     result = -(len(data) + 1)
@@ -42,8 +42,11 @@ def eval(data: list[int]) -> set[str]:
         
 score = set()
 
-@given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
+@example(data=[])
+@example(data=[-2, -2])
+@example(data=[6, 6])
 @settings(max_examples=1000)
+@given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
 def test(data: list[int]):
     global score
     score.update(eval(data))
