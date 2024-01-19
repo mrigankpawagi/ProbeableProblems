@@ -5,7 +5,7 @@ https://codecheck.io/files/2306111051595nfjvjxiu7a73md5cn4saj9
 """
 
 from submission import first_positive_integer
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings, strategies as st, example
 
 def sol(s: str) -> int:
     s = s.split()
@@ -56,8 +56,13 @@ def eval(s: str) -> set[str]:
         
 score = set()
 
-@given(st.text(alphabet="-., b013", max_size=7))
+@example(s='')
+@example(s='-7')
+@example(s='.7')
+@example(s='07')
+@example(s='1481.9 2')
 @settings(max_examples=1000)
+@given(st.text(alphabet="-., b013", max_size=7))
 def test(s: str):
     global score
     score.update(eval(s))
