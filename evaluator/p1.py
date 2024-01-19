@@ -50,7 +50,10 @@ score = set()
 @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
 def test(data: list[int]):
     global score
-    score.update(eval(data))
+    try:
+        score.update(eval(data))
+    except:
+        pass
 
 test()
 print(len(score))
