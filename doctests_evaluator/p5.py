@@ -4,8 +4,6 @@ Problem 5: Write a function reorder() that takes two arguments: a list of number
 https://codecheck.io/files/23052009254fsf3krf2kbaao8g69hezp1xw
 """
 
-from submission import reorder
-from hypothesis import given, settings, strategies as st
 import math
 
 def sol(data: list, key) -> list:
@@ -27,46 +25,44 @@ def sol(data: list, key) -> list:
             hi_index += 1
     return result
 
-def eval(data: list, key) -> str:
+def eval(args, given) -> str:
     """
     Return the AIC that the student's solution misses.
     """
+    data, key = args
     AIC = set()
     expected = sol(data, key)
-    actual = reorder(data, key)
 
-    if expected != actual:
-        if math.isnan(key):
-            # AIC 1: key is nan
-            AIC.add("nan key")
-        else:
-            expected_filtered = [x for x in expected if not math.isnan(x) and x != key]
-            actual_filtered = [x for x in actual if not math.isnan(x) and x != key]
-            if expected_filtered != actual_filtered:
-                num_small = sum(x < key for x in expected_filtered)
-                if sorted(expected_filtered[:num_small]) == sorted(actual_filtered[:num_small]) and\
-                sorted(expected_filtered[num_small:]) == sorted(actual_filtered[num_small:]):
-                    # AIC 2: Order of elements
-                    AIC.add("order")
-            else:
-                if any(math.isnan(x) for x in data):
-                    # AIC 3: Position of nan in result
-                    AIC.add("nan position")
-                if key in data:
-                    # AIC 4: Position of key in result
-                    AIC.add("key position")
-        if not AIC:
-            AIC.add("unknown")
-                
+    if expected != given:
+        return AIC
+    
+    if math.isnan(key):
+        # AIC 1: key is nan
+        AIC.add("nan key")
+    else:
+        expected_filtered = [x for x in expected if not math.isnan(x) and x != key]
+        given_filtered = [x for x in data if not math.isnan(x) and x != key]
+        
+        num_small = sum(x < key for x in expected_filtered)
+        
+        if expected_filtered[:num_small] != given_filtered[:num_small] or \
+            expected_filtered[num_small:] != given_filtered[num_small:]:
+            # AIC 2: Order of elements
+            AIC.add("order")
+            
+        if any(math.isnan(x) for x in data):
+            # AIC 3: Position of nan in result
+            AIC.add("nan position")
+            
+        if key in data:
+            # AIC 4: Position of key in result
+            AIC.add("key position")
+        
     return AIC
 
 score = set()
 
-@given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
-@settings(max_examples=1000)
-def test(data: list, key):
+def test(doctests):
     global score
-    score.update(eval(data, key))
-
-test()
-print(len(score))
+    for args, given in doctests:    
+        score.update(eval(args, given))
