@@ -43,8 +43,9 @@ def eval(data: list[int]) -> set[str]:
 score = set()
 
 @example(data=[])
-@example(data=[-2, -2])
-@example(data=[6, 6])
+@example(data=[-1, -1])
+@example(data=[2, 1, 2, 1])
+@example(data=[1, 2, 1, 2])
 @settings(max_examples=1000)
 @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
 def test(data: list[int]):
