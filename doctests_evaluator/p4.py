@@ -4,9 +4,6 @@ Problem 4: Write a function max_profit() that takes one argument: a list of inte
 https://codecheck.io/files/23052001283if0mgoiorxweda5phl1u4769
 """
 
-from submission import max_profit
-from hypothesis import given, settings, strategies as st
-
 def sol(price: list[int]) -> tuple[int, int] | None:
     if not price:
         return None
@@ -30,49 +27,62 @@ def sol(price: list[int]) -> tuple[int, int] | None:
         return (0, 0)
     return best_buy, best_sell
 
-def eval(price: list[int]) -> str:
+def eval(args, given) -> str:
     """
     Return the AIC that the student's solution misses.
     """
+    price, = args
     AIC = set()
     expected = sol(price)
-    actual = max_profit(price)
+    buy_expected, sell_expected = expected
+    profit_expected = price[sell_expected] - price[buy_expected]
 
-    if expected != actual:
-        if not price:
-            # AIC 1: Empty list
-            AIC.add("empty list")
-        elif isinstance(actual, tuple) and len(actual) == 2:
-            buy_expected, sell_expected = expected
-            buy_actual, sell_actual = actual
-            if buy_actual >= 0 and buy_actual <= sell_actual and sell_actual < len(price) and\
-            price[sell_actual] - price[buy_actual] >= price[sell_expected] - price[buy_expected]:
-                if price[buy_actual] <= 0 or price[sell_actual] <= 0:
-                    # AIC 2: Positive price
-                    AIC.add("positive price")
-                elif expected == (0, 0):
-                    # AIC 3: No profit
-                    AIC.add("no profit")
-                else:
-                    if sell_actual - buy_actual > sell_expected - buy_expected:
-                        # AIC 4: Narrow range
-                        AIC.add("narrow range")
-                    if sell_actual > sell_expected:
-                        # AIC 5: Early sell
-                        AIC.add("early sell")
+    if expected != given:
+        return AIC
+        
+    if not price:
+        # AIC 1: Empty list
+        AIC.add("empty list")
 
-        if not AIC:
-            AIC.add("unknown")
+    all_profits = []
+    for i in range(len(price) - 1):
+        for j in range(i, len(price)):
+            if price[i] > 0 and price[j] > 0:
+                profit = price[j] - price[i]
+                all_profits.append((profit, i, j, price[i], price[j]))
+                
+    all_profits.sort(reverse=True, key=lambda x: x[0])
+    
+    # Is the best profit unique?
+    best_profit = all_profits[0]
+    all_best_profits = [x for x in all_profits if x[0] == best_profit[0]]
+    
+    if any(p[3] <= 0 or p[4] <= 0 for p in all_best_profits):
+        # AIC 2: Non-positive price
+        AIC.add("non-positive price")
+
+    if expected == (0, 0):
+        # AIC 3: No break-even
+        AIC.add("no break-even")
+        
+    if any(p[3] == p[4] for p in all_best_profits):
+        # AIC 4: Only break-even
+        AIC.add("break even")
+        
+    if best_profit[0] == profit_expected:
+        if any(p[2] - p[1] > sell_expected - buy_expected for p in all_best_profits):
+            # AIC 5: Narrow range
+            AIC.add("narrow range")
+            
+        if any(p[2] > sell_expected for p in all_best_profits):
+            # AIC 6: Early sell
+            AIC.add("early sell")
 
     return AIC
 
 score = set()
 
-@given(st.lists(st.integers(min_value=-10, max_value=10), max_size=7))
-@settings(max_examples=1000)
-def test(price: list[int]):
+def test(doctests):
     global score
-    score.update(eval(price))
-
-test()
-print(len(score))
+    for args, given in doctests:    
+        score.update(eval(args, given))
