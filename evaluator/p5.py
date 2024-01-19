@@ -5,7 +5,7 @@ https://codecheck.io/files/23052009254fsf3krf2kbaao8g69hezp1xw
 """
 
 from submission import reorder
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings, strategies as st, example
 import math
 
 def sol(data: list, key) -> list:
@@ -62,8 +62,13 @@ def eval(data: list, key) -> str:
 
 score = set()
 
-@given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
+@example(data=[-1, -1], key=float('nan'))
+@example(data=[5, 3.0, 2, 4, 1, 3], key=3)
+@example(data=[float('nan'), 5, float('nan'), float('nan'), 1, float('nan')], key=3)
+@example(data=[5, float('inf'), 1, 4, 2, float('inf')], key=float('inf'))
+@example(data=[5, float('-inf'), 1, 4, 2, float('-inf')], key=float('-inf'))
 @settings(max_examples=1000)
+@given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
 def test(data: list, key):
     global score
     score.update(eval(data, key))
