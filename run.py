@@ -17,7 +17,7 @@ for Q in range(1, NUM_QUESTIONS + 1):
         for filename in os.listdir(path):
             if filename.endswith(".py"):
                 file = os.path.join(path, filename)
-                team, attempt = filename.split("_")
+                team, attempt = filename.split(".py")[0].split("_")
                 
                 # copy the file into evaluator/ as "submission.py"
                 os.system(f"cp {file} evaluator/submission.py")
