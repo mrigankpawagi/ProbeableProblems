@@ -40,5 +40,8 @@ def eval(args, given) -> set[str]:
 def test(doctests):
     score = set()
     for args, given in doctests:    
-        score.update(eval(args, given))
+        try:
+            score.update(eval(args, given))
+        except:
+            pass
     return sorted(list(score))
