@@ -60,9 +60,9 @@ def eval(args, given) -> str:
         
     return AIC
 
-score = set()
 
 def test(doctests):
-    global score
+    score = set()
     for args, given in doctests:    
         score.update(eval(args, given))
+    return score
