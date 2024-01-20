@@ -41,4 +41,4 @@ def test(doctests):
     score = set()
     for args, given in doctests:    
         score.update(eval(args, given))
-    return score
+    return sorted(list(score))
