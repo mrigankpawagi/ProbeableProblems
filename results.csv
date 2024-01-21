@@ -27,19 +27,19 @@ Q,team,attempt,score,status
 1,21,1,"['empty list', 'no positive']",buggy
 1,20,1,[],ok
 2,2,1,[],buggy
-2,22,1,"['no positive', 'prefix', 'suffix', 'unknown']",buggy
+2,22,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
 2,10,1,"['multi digit', 'prefix', 'suffix', 'unknown']",buggy
 2,9,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
-2,19,2,"['prefix', 'suffix', 'unknown']",buggy
+2,19,2,"['multi digit', 'prefix', 'suffix', 'unknown']",buggy
 2,11,1,"['multi digit', 'prefix', 'suffix', 'unknown']",buggy
 2,8,1,"['multi digit', 'prefix', 'suffix']",buggy
 2,4,1,"['multi digit', 'prefix', 'suffix', 'unknown']",buggy
 2,23,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
-2,3,1,"['no positive', 'prefix', 'suffix']",buggy
+2,3,1,"['multi digit', 'no positive', 'prefix', 'suffix']",buggy
 2,16,1,"['multi digit', 'prefix', 'suffix']",buggy
 2,17,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
 2,25,1,"['multi digit', 'prefix', 'suffix', 'unknown']",buggy
-2,12,1,"['prefix', 'suffix', 'unknown']",buggy
+2,12,1,"['multi digit', 'prefix', 'suffix', 'unknown']",buggy
 2,26,1,"['multi digit', 'prefix', 'suffix', 'unknown']",buggy
 2,1,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
 2,9,2,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
@@ -54,7 +54,7 @@ Q,team,attempt,score,status
 2,13,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
 2,11,2,"['multi digit', 'prefix', 'suffix']",buggy
 2,15,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
-2,21,1,"['no positive', 'prefix', 'suffix', 'unknown']",buggy
+2,21,1,"['multi digit', 'no positive', 'prefix', 'suffix', 'unknown']",buggy
 3,22,1,"['multiple least frequent', 'unknown']",buggy
 3,10,1,['multiple least frequent'],buggy
 3,8,1,['multiple least frequent'],buggy
@@ -93,8 +93,8 @@ Q,team,attempt,score,status
 4,16,1,"['break even', 'empty list', 'narrow range', 'no break-even', 'non-positive price', 'unknown']",buggy
 4,17,1,"['empty list', 'unknown']",buggy
 4,25,1,"['break even', 'empty list', 'narrow range', 'non-positive price', 'unknown']",buggy
-4,12,1,"['empty list', 'non-positive price', 'unknown']",buggy
-4,26,1,"['break even', 'narrow range', 'non-positive price', 'unknown']",buggy
+4,12,1,"['break even', 'empty list', 'non-positive price', 'unknown']",buggy
+4,26,1,"['break even', 'early sell', 'narrow range', 'non-positive price', 'unknown']",buggy
 4,1,1,"['empty list', 'unknown']",buggy
 4,24,1,"['empty list', 'unknown']",buggy
 4,8,2,"['break even', 'empty list', 'narrow range', 'non-positive price', 'unknown']",buggy
@@ -115,7 +115,7 @@ Q,team,attempt,score,status
 5,8,1,"['key position', 'nan key', 'nan position']",buggy
 5,4,1,"['key position', 'nan key', 'nan position']",buggy
 5,23,1,"['key position', 'nan key', 'nan position']",buggy
-5,3,1,"['nan position', 'order']",buggy
+5,3,1,"['key position', 'nan position', 'order']",buggy
 5,16,1,"['key position', 'nan key', 'nan position']",buggy
 5,25,1,"['key position', 'nan key', 'nan position', 'order', 'unknown']",buggy
 5,12,1,"['key position', 'nan position']",buggy

@@ -61,7 +61,7 @@ score = set()
 @example(s='.7')
 @example(s='07')
 @example(s='1481.9 2')
-@settings(max_examples=1000)
+@settings(max_examples=2000)
 @given(st.text(alphabet="-., b013", max_size=7))
 def test(s: str):
     global score

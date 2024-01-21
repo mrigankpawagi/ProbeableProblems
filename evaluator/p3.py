@@ -44,7 +44,7 @@ score = set()
 @example(data=[-1, -1])
 @example(data=[2, 1, 2, 1])
 @example(data=[1, 2, 1, 2])
-@settings(max_examples=1000)
+@settings(max_examples=2000)
 @given(st.lists(st.integers(min_value=-10, max_value=10), min_size=1, max_size=7))
 def test(data: list[int]):
     global score
