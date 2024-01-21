@@ -78,7 +78,7 @@ Q,team,attempt,score,status
 3,7,1,[],ok
 3,13,1,[],ok
 3,21,1,[],ok
-4,13,2,"['non-positive price', 'unknown']",buggy
+4,13,2,"['narrow range', 'non-positive price', 'unknown']",buggy
 4,2,1,"['break even', 'narrow range', 'non-positive price', 'unknown']",buggy
 4,22,1,"['empty list', 'unknown']",buggy
 4,10,1,"['break even', 'narrow range', 'non-positive price']",buggy
