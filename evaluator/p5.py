@@ -60,21 +60,32 @@ def eval(data: list, key) -> str:
                 
     return AIC
 
-score = set()
+if __name__ == "__main__":
+    import sys
+    
+    if len(sys.argv) > 1:
+        data = eval(sys.argv[1:])
+        try:
+            print(sorted(eval(data)))
+        except:
+            pass
+    
+    else:
+        score = set()
 
-@example(data=[-1, -1], key=float('nan'))
-@example(data=[5, 3.0, 2, 4, 1, 3], key=3)
-@example(data=[float('nan'), 5, float('nan'), float('nan'), 1, float('nan')], key=3)
-@example(data=[5, float('inf'), 1, 4, 2, float('inf')], key=float('inf'))
-@example(data=[5, float('-inf'), 1, 4, 2, float('-inf')], key=float('-inf'))
-@settings(max_examples=2000)
-@given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
-def test(data: list, key):
-    global score
-    try:
-        score.update(eval(data, key))
-    except:
-        pass
+    @example(data=[-1, -1], key=float('nan'))
+    @example(data=[5, 3.0, 2, 4, 1, 3], key=3)
+    @example(data=[float('nan'), 5, float('nan'), float('nan'), 1, float('nan')], key=3)
+    @example(data=[5, float('inf'), 1, 4, 2, float('inf')], key=float('inf'))
+    @example(data=[5, float('-inf'), 1, 4, 2, float('-inf')], key=float('-inf'))
+    @settings(max_examples=2000)
+    @given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
+    def test(data: list, key):
+        global score
+        try:
+            score.update(eval(data, key))
+        except:
+            pass
 
-test()
-print(sorted(list(score)))
+    test()
+    print(sorted(list(score)))

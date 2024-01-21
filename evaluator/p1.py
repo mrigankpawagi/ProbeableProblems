@@ -40,20 +40,31 @@ def eval(data: list[int]) -> set[str]:
 
     return AIC
         
-score = set()
+if __name__ == "__main__":
+    import sys
+    
+    if len(sys.argv) > 1:
+        data = eval(sys.argv[1:])
+        try:
+            print(sorted(eval(data)))
+        except:
+            pass
+    
+    else:
+        score = set()
 
-@example(data=[])
-@example(data=[-1, -1])
-@example(data=[2, 1, 2, 1])
-@example(data=[1, 2, 1, 2])
-@settings(max_examples=2000)
-@given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
-def test(data: list[int]):
-    global score
-    try:
-        score.update(eval(data))
-    except:
-        pass
+        @example(data=[])
+        @example(data=[-1, -1])
+        @example(data=[2, 1, 2, 1])
+        @example(data=[1, 2, 1, 2])
+        @settings(max_examples=2000)
+        @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
+        def test(data: list[int]):
+            global score
+            try:
+                score.update(eval(data))
+            except:
+                pass
 
-test()
-print(sorted(list(score)))
+        test()
+        print(sorted(list(score)))

@@ -54,21 +54,32 @@ def eval(s: str) -> set[str]:
 
     return AIC       
         
-score = set()
+if __name__ == "__main__":
+    import sys
+    
+    if len(sys.argv) > 1:
+        data = eval(sys.argv[1:])
+        try:
+            print(sorted(eval(data)))
+        except:
+            pass
+    
+    else:
+        score = set()
 
-@example(s='')
-@example(s='-7')
-@example(s='.7')
-@example(s='07')
-@example(s='1481.9 2')
-@settings(max_examples=2000)
-@given(st.text(alphabet="-., b013", max_size=7))
-def test(s: str):
-    global score
-    try:
-        score.update(eval(s))
-    except:
-        pass
+        @example(s='')
+        @example(s='-7')
+        @example(s='.7')
+        @example(s='07')
+        @example(s='1481.9 2')
+        @settings(max_examples=2000)
+        @given(st.text(alphabet="-., b013", max_size=7))
+        def test(s: str):
+            global score
+            try:
+                score.update(eval(s))
+            except:
+                pass
 
-test()
-print(sorted(list(score)))
+        test()
+        print(sorted(list(score)))
