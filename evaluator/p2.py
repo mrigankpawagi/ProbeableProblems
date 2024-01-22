@@ -20,7 +20,7 @@ def sol(s: str) -> int:
             return result
     return 0
 
-def eval(s: str) -> set[str]:
+def _eval(s: str) -> set[str]:
     """
     Return the AIC that the student's solution misses.
     """
@@ -58,9 +58,9 @@ if __name__ == "__main__":
     import sys
     
     if len(sys.argv) > 1:
-        data = eval(sys.argv[1:])
+        data = eval(sys.argv[1])
         try:
-            print(sorted(eval(data)))
+            print(sorted(_eval(*data)))
         except:
             pass
     
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         def test(s: str):
             global score
             try:
-                score.update(eval(s))
+                score.update(_eval(s))
             except:
                 pass
 

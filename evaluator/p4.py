@@ -30,7 +30,7 @@ def sol(price: list[int]) -> tuple[int, int] | None:
         return (0, 0)
     return best_buy, best_sell
 
-def eval(price: list[int]) -> str:
+def _eval(price: list[int]) -> str:
     """
     Return the AIC that the student's solution misses.
     """
@@ -73,9 +73,9 @@ if __name__ == "__main__":
     import sys
     
     if len(sys.argv) > 1:
-        data = eval(sys.argv[1:])
+        data = eval(sys.argv[1])
         try:
-            print(sorted(eval(data)))
+            print(sorted(_eval(*data)))
         except:
             pass
     
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     def test(price: list[int]):
         global score
         try:
-            score.update(eval(price))
+            score.update(_eval(price))
         except:
             pass
 
