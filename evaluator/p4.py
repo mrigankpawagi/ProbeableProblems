@@ -82,20 +82,20 @@ if __name__ == "__main__":
     else:
         score = set()
 
-    @example(price=[])
-    @example(price=[-3, -1])
-    @example(price=[2, 1])
-    @example(price=[1, 1])
-    @example(price=[1, 2, 1, 3, 2, 3])
-    @example(price=[1, 2, 1, 2])
-    @settings(max_examples=2000)
-    @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=7))
-    def test(price: list[int]):
-        global score
-        try:
-            score.update(_eval(price))
-        except:
-            pass
+        @example(price=[])
+        @example(price=[-3, -1])
+        @example(price=[2, 1])
+        @example(price=[1, 1])
+        @example(price=[1, 2, 1, 3, 2, 3])
+        @example(price=[1, 2, 1, 2])
+        @settings(max_examples=2000)
+        @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=7))
+        def test(price: list[int]):
+            global score
+            try:
+                score.update(_eval(price))
+            except:
+                pass
 
-    test()
-    print(sorted(list(score)))
+        test()
+        print(sorted(list(score)))
