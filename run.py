@@ -72,7 +72,8 @@ for Q in range(1, NUM_QUESTIONS + 1):
                 os.system(f"cp {file} evaluator/submission.py")
                 
                 # run the evaluator and capture the output from stdout
-                output = eval(os.popen(f"python evaluator/p{Q}.py").read().strip())
+                s = os.popen(f"python evaluator/p{Q}.py").read().strip()
+                output = eval(s)
                 
                 # import "eval" from doctests_evaluator/p{Q}.py
                 doctest_eval_func = importlib.import_module(f"doctests_evaluator.p{Q}").eval
@@ -85,14 +86,15 @@ for Q in range(1, NUM_QUESTIONS + 1):
                     except:
                         pass
                 
-                self_pass = 0
+                missed_from_self_doctests = []
                 for doctest in aic_doctests:
-                    output_doct = os.popen(f"python evaluator/p{Q}.py {repr(doctest)}").read().strip()
-                    if not output_doct:
-                        self_pass += 1
+                    # print(f"python evaluator/p{Q}.py \"{doctest}\"")
+                    output_doct = os.popen(f"python evaluator/p{Q}.py \"{doctest}\"").read().strip()
+                    if output_doct != "":
+                        missed_from_self_doctests.extend(eval(output_doct))
                 
                 # write to results
-                results.append((Q, team, attempt, output, status, self_pass))
+                results.append((Q, team, attempt, output, status, missed_from_self_doctests))
             
 # delete the file from evaluator/
 os.system("rm evaluator/submission.py")
@@ -100,5 +102,5 @@ os.system("rm evaluator/submission.py")
 # save results to csv
 with open("results.csv", "w") as f:
     writer = csv.writer(f)
-    writer.writerow(["Q", "team", "attempt", "score", "status", "self_pass"])
+    writer.writerow(["Q", "team", "attempt", "score", "status", "missed_from_self_doctests"])
     writer.writerows(results)
