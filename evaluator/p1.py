@@ -34,6 +34,7 @@ def main():
         result["largest_index"]["simplest"] = least_positive_index([1, 1]) == sol([1, 1])
     except:
         result["largest_index"]["simplest"] = False
+    
     # inductive
     @given(st.lists(st.integers(min_value=1, max_value=10), min_size=2, max_size=5).filter(lambda x: any(n > 0 for n in x) and (x.count(min(n for n in x if n > 0)) > 1)))
     @settings(suppress_health_check=(HealthCheck.all()))
@@ -65,3 +66,7 @@ def main():
         result["no_positive"]["inductive"] = False
         
     return result
+
+
+if __name__ == "__main__":
+    print(main())
