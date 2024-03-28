@@ -14,32 +14,7 @@ def sol(data: list[int]) -> int:
             result = i
     return result
 
-def _eval(data: list[int]) -> set[str]:
-    """
-    Return the AIC that the student's solution misses.
-    """
-    AIC = set()
-    expected = sol(data)
-    actual = least_positive_index(data)
 
-    if expected != actual:
-        # AIC 1a: no positive integer in list (empty list)
-        if not data:
-            AIC.add("empty list")
-
-        # AIC 1b: no positive integer in list (non-empty list)
-        if data and all(n <= 0 for n in data):
-            AIC.add("no positive")
-            
-        # AIC 2: smallest positive integer appears more than once
-        if any(n > 0 for n in data) and data.count(min(n for n in data if n > 0)) > 1:
-            AIC.add("repeated smallest")
-
-        if not AIC:
-            AIC.add("unknown")
-
-    return AIC
-        
 def main():
     result = {
         "largest_index": {
