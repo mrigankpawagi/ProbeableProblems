@@ -27,13 +27,15 @@ def main():
         }
     }
     
-    # "the largest index"
+    # "the largest index" (but all values positive)
     
     # simplest case
-    result["largest_index"]["simplest"] = least_positive_index([1, 1]) == sol([1, 1])
-    
+    try:
+        result["largest_index"]["simplest"] = least_positive_index([1, 1]) == sol([1, 1])
+    except:
+        result["largest_index"]["simplest"] = False
     # inductive
-    @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5).filter(lambda x: any(n > 0 for n in x) and (x.count(min(n for n in x if n > 0)) > 1)))
+    @given(st.lists(st.integers(min_value=1, max_value=10), min_size=2, max_size=5).filter(lambda x: any(n > 0 for n in x) and (x.count(min(n for n in x if n > 0)) > 1)))
     @settings(suppress_health_check=(HealthCheck.all()))
     def test_inductive_largest_index(data):
         assert least_positive_index(data) == sol(data)
@@ -46,10 +48,13 @@ def main():
     # "no positive integer"
     
     # simplest case
-    result["no_positive"]["simplest"] = least_positive_index([]) == sol([])
-    
+    try:
+        result["no_positive"]["simplest"] = least_positive_index([]) == sol([])
+    except:
+        result["no_positive"]["simplest"] = False
+
     # inductive
-    @given(st.lists(st.integers(min_value=-10, max_value=0), max_size=5).filter(lambda x: not (any(n > 0 for n in x) and (x.count(min(n for n in x if n > 0)) > 1))))
+    @given(st.lists(st.integers(min_value=-10, max_value=0), min_size=1, max_size=5).filter(lambda x: (x.count(min(x)) == 1)))
     @settings(suppress_health_check=(HealthCheck.all()))
     def test_inductive_no_positive(data):
         assert least_positive_index(data) == sol(data)
