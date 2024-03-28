@@ -5,7 +5,7 @@ https://codecheck.io/files/23061110151rresbylu6oa8y2va3dxdesx9
 """
 
 from submission import min_freq
-from hypothesis import given, settings, strategies as st, example
+from hypothesis import given, settings, HealthCheck, strategies as st
 
 def sol(data: list[int]) -> int:
     result = data[0]
@@ -17,52 +17,36 @@ def sol(data: list[int]) -> int:
             result_count = c
     return result
 
-def _eval(data: list[int]) -> set[str]:
-    """
-    Return the AIC that the student's solution misses.
-    """
-    AIC = set()
-    expected = sol(data)
-    actual = min_freq(data)
 
-    if expected != actual:
-        # AIC 1: More than one integer appears least often
-        least_freq = data.count(expected)
-        num_with_least_freq = sum(data.count(n) == least_freq for n in set(data))
-        if num_with_least_freq > 1:
-            # AIC 1: More than one least frequent number
-            AIC.add("multiple least frequent")
-
-        if not AIC:
-            AIC.add("unknown")
+def main():
+    result = {
+        "break_ties_integer": {
+            "simplest": True,
+            "inductive": True
+        }
+    }
     
-    return AIC
-
-if __name__ == "__main__":
-    import sys
+    # "the integer" (how do we break ties?)
     
-    if len(sys.argv) > 1:
-        data = eval(sys.argv[1])
-        try:
-            print(sorted(_eval(*data)))
-        except:
-            pass
+    # simplest case
+    try:
+        result["break_ties_integer"]["simplest"] = min_freq([1, 0]) == sol([1, 0])
+        # I took [1, 0] instead of [0, 1] since in the latter, one may have assumed that we are selecting 
+        # the smallest integer at the smallest index
+    except:
+        result["break_ties_integer"]["simplest"] = False
     
-    else:
-        score = set()
+    # inductive
+    @given(st.lists(st.integers(min_value=1, max_value=10), min_size=2, max_size=5).filter(lambda x: sum(sol(x) == x.count(n) for n in set(x)) > 1))
+    @settings(suppress_health_check=(HealthCheck.all()))
+    def test_inductive_break_ties(data):
+        assert min_freq(data) == sol(data)
+    
+    try:
+        test_inductive_break_ties()
+    except:
+        result["break_ties_integer"]["inductive"] = False    
+        
+    return result
 
-        @example(data=[-76])
-        @example(data=[-1, -1])
-        @example(data=[2, 1, 2, 1])
-        @example(data=[1, 2, 1, 2])
-        @settings(max_examples=2000)
-        @given(st.lists(st.integers(min_value=-10, max_value=10), min_size=1, max_size=7))
-        def test(data: list[int]):
-            global score
-            try:
-                score.update(_eval(data))
-            except:
-                pass
-
-        test()
-        print(sorted(list(score)))
+print(main())
