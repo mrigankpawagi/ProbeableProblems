@@ -5,7 +5,7 @@ https://codecheck.io/files/2306111033cnnmzafkxveg0ap6i7blj01f0
 """
 
 from submission import least_positive_index
-from hypothesis import given, settings, strategies as st, example
+from hypothesis import given, settings, HealthCheck, strategies as st
 
 def sol(data: list[int]) -> int:
     result = -(len(data) + 1)
@@ -40,31 +40,48 @@ def _eval(data: list[int]) -> set[str]:
 
     return AIC
         
-if __name__ == "__main__":
-    import sys
+def main():
+    result = {
+        "largest_index": {
+            "simplest": True,
+            "inductive": True
+        },
+        "no_positive": {
+            "simplest": True,
+            "inductive": True
+        }
+    }
     
-    if len(sys.argv) > 1:
-        data = eval(sys.argv[1])
-        try:
-            print(sorted(_eval(*data)))
-        except:
-            pass
+    # "the largest index"
     
-    else:
-        score = set()
-
-        @example(data=[])
-        @example(data=[-1, -1])
-        @example(data=[2, 1, 2, 1])
-        @example(data=[1, 2, 1, 2])
-        @settings(max_examples=2000)
-        @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5))
-        def test(data: list[int]):
-            global score
-            try:
-                score.update(_eval(data))
-            except:
-                pass
-
-        test()
-        print(sorted(list(score)))
+    # simplest case
+    result["largest_index"]["simplest"] = least_positive_index([1, 1]) == sol([1, 1])
+    
+    # inductive
+    @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=5).filter(lambda x: any(n > 0 for n in x) and (x.count(min(n for n in x if n > 0)) > 1)))
+    @settings(suppress_health_check=(HealthCheck.all()))
+    def test_inductive_largest_index(data):
+        assert least_positive_index(data) == sol(data)
+    
+    try:
+        test_inductive_largest_index()
+    except:
+        result["largest_index"]["inductive"] = False    
+        
+    # "no positive integer"
+    
+    # simplest case
+    result["no_positive"]["simplest"] = least_positive_index([]) == sol([])
+    
+    # inductive
+    @given(st.lists(st.integers(min_value=-10, max_value=0), max_size=5).filter(lambda x: not (any(n > 0 for n in x) and (x.count(min(n for n in x if n > 0)) > 1))))
+    @settings(suppress_health_check=(HealthCheck.all()))
+    def test_inductive_no_positive(data):
+        assert least_positive_index(data) == sol(data)
+        
+    try:
+        test_inductive_no_positive()
+    except:
+        result["no_positive"]["inductive"] = False
+        
+    return result
