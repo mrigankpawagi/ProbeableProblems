@@ -22,6 +22,7 @@ def main():
     result = {
         "break_ties_integer": {
             "simplest": True,
+            "simplest_check_alternative": True,
             "inductive": True
         }
     }
@@ -33,6 +34,9 @@ def main():
         result["break_ties_integer"]["simplest"] = min_freq([1, 0]) == sol([1, 0])
         # I took [1, 0] instead of [0, 1] since in the latter, one may have assumed that we are selecting 
         # the smallest integer at the smallest index
+        
+        # try the alternative too
+        result["break_ties_integer"]["simplest_check_alternative"] = min_freq([0, 1]) == sol([0, 1])
     except:
         result["break_ties_integer"]["simplest"] = False
     
