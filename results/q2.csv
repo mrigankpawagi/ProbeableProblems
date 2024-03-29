@@ -18,7 +18,7 @@ filename,status,name,team_id,submission_id,return_int,starts_with_nonzero_digit,
 9_2.py,buggy,9_2,9,2,False,False,True,False,False,False,False
 24_1.py,buggy,24_1,24,1,False,False,False,False,False,True,False
 8_2.py,buggy,8_2,8,2,True,False,False,False,False,True,False
-6_1.py,buggy,6_1,6,1,True,False,True,True,False,True,False
+6_1.py,buggy,6_1,6,1,True,False,False,True,False,True,False
 20_1.py,buggy,20_1,20,1,False,False,True,False,False,False,False
 14_1.py,buggy,14_1,14,1,True,False,False,True,False,True,False
 5_1.py,buggy,5_1,5,1,True,False,True,True,False,True,False

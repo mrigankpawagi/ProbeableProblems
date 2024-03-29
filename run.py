@@ -44,3 +44,7 @@ for Q in range(1, 6):
     
     # save the DataFrame to a CSV file
     df.to_csv(f"results/q{Q}.csv", index=False)
+
+
+# delete evaluator/submission.py
+os.remove("evaluator/submission.py")

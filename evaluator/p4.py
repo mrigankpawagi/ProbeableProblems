@@ -30,72 +30,114 @@ def sol(price: list[int]) -> tuple[int, int] | None:
         return (0, 0)
     return best_buy, best_sell
 
-def _eval(price: list[int]) -> str:
-    """
-    Return the AIC that the student's solution misses.
-    """
-    AIC = set()
-    expected = sol(price)
-    actual = max_profit(price)
 
-    if expected != actual:
-        if not price:
-            # AIC 1: Empty list
-            AIC.add("empty list")
-        elif isinstance(actual, tuple) and len(actual) == 2:
-            buy_expected, sell_expected = expected
-            buy_actual, sell_actual = actual
-            if buy_actual >= 0 and buy_actual <= sell_actual and sell_actual < len(price) and\
-            price[sell_actual] - price[buy_actual] >= price[sell_expected] - price[buy_expected]:
-                if price[buy_actual] <= 0 or price[sell_actual] <= 0:
-                    # AIC 2: Non-positive price
-                    AIC.add("non-positive price")
-                elif expected == (0, 0):
-                    # AIC 3: No break-even
-                    AIC.add("no break-even")
-                elif buy_expected != sell_expected and price[buy_expected] == price[sell_expected]:
-                    # AIC 4: Only break-even
-                    AIC.add("break even")
-                else:
-                    if sell_actual - buy_actual > sell_expected - buy_expected:
-                        # AIC 5: Narrow range
-                        AIC.add("narrow range")
-                    if sell_actual > sell_expected:
-                        # AIC 6: Early sell
-                        AIC.add("early sell")
+def main():
+    result = {
+        "empty_list_none": True,
+        "return_type_tuple": True,
+        "negative_profit": True,
+        "sell_after_buy": True,
+        "no_profit": True,
+        "zero_profit": True,
+        "ignore_non_positive": True,
+        "tie_break": True,
+        "residue": True,       
+    }
 
-        if not AIC:
-            AIC.add("unknown")
 
-    return AIC
+    def check(data, bug: str):
+        try:
+            res = max_profit(data)
+            if not isinstance(res, tuple) and data != []:
+                res = tuple(res)
+            
+            assert res == sol(data)
+        except:
+            result[bug] = False
+            
+    # empty list
+    try:
+        assert max_profit([]) == None
+    except:
+        result["empty_list_none"] = False
+        
+    
+    def simple():
+        # Return a list of >= 2 unique
+        # integers in ascending order,
+        # with unique gaps between them
+        # to avoid tie-breaking.
+        return st.lists(
+            st.integers(min_value=0, max_value=10),
+            min_size=2, max_size=5, unique=True
+        ).map(lambda x: [2 ** i for i in sorted(x)])
+        
+    # return_type_tuple
+    @given(simple())
+    def return_type_tuple(data):
+        try:
+            res = max_profit(data[:])
+            assert isinstance(res, tuple) and len(res) == 2
+        except:
+            result["return_type_tuple"] = False
+            
+    return_type_tuple()
+            
+    
+    # non negative profit sell and buy
+    @given(simple())
+    def nonneg_profit_sell_after_buy(data):
+        try:
+            t = max_profit(data[:])
+            assert data[t[1]] >= data[t[0]]
+        except:
+            result["negative_profit"] = False
+
+        try:
+            assert t[0] < t[1]
+        except:
+            result["sell_after_buy"] = False
+            
+    nonneg_profit_sell_after_buy()
+
+
+    @given(simple())
+    def no_profit(data):
+        data = data[::-1]
+        check(data, "no_profit")
+
+
+    @given(simple(), st.integers(min_value=0, max_value=4))
+    def zero_profit(data, i):
+        i = i % len(data)
+        data = data[:i] + [data[i]] + data[i:]
+        check(data[::-1], "zero_profit")
+
+
+    @given(simple(), st.integers(min_value=0, max_value=4))
+    def ignore_non_positive(data, i):
+        random_element = data[i % len(data)]
+        data = [random_element - x for x in data[::-1]]
+        check(data, "ignore_non_positive")
+
+
+    @given(st.lists(st.integers(min_value=1, max_value=10), min_size=4, max_size=6))
+    def tie_break(data):
+        check(data, "tie_break")
+
+
+    @given(st.lists(st.integers(min_value=-5, max_value=10), max_size=6))
+    def check_all(data):
+        check(data, "residue")
+        
+    no_profit()
+    zero_profit()
+    ignore_non_positive()
+    tie_break()
+    check_all()
+  
+    return result
+
 
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) > 1:
-        data = eval(sys.argv[1])
-        try:
-            print(sorted(_eval(*data)))
-        except:
-            pass
-    
-    else:
-        score = set()
-
-        @example(price=[])
-        @example(price=[-3, -1])
-        @example(price=[2, 1])
-        @example(price=[1, 1])
-        @example(price=[1, 2, 1, 3, 2, 3])
-        @example(price=[1, 2, 1, 2])
-        @settings(max_examples=2000)
-        @given(st.lists(st.integers(min_value=-10, max_value=10), max_size=7))
-        def test(price: list[int]):
-            global score
-            try:
-                score.update(_eval(price))
-            except:
-                pass
-
-        test()
-        print(sorted(list(score)))
+    print(main())
