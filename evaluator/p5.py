@@ -5,7 +5,7 @@ https://codecheck.io/files/23052009254fsf3krf2kbaao8g69hezp1xw
 """
 
 from submission import reorder
-from hypothesis import given, settings, strategies as st, example
+from hypothesis import given, settings, HealthCheck, strategies as st
 import math
 
 def sol(data: list, key) -> list:
@@ -27,65 +27,104 @@ def sol(data: list, key) -> list:
             hi_index += 1
     return result
 
-def _eval(data: list, key) -> str:
-    """
-    Return the AIC that the student's solution misses.
-    """
-    AIC = set()
-    expected = sol(data, key)
-    actual = reorder(data, key)
 
-    if expected != actual:
-        if math.isnan(key):
-            # AIC 1: key is nan
-            AIC.add("nan key")
-        else:
-            expected_filtered = [x for x in expected if not math.isnan(x) and x != key]
-            actual_filtered = [x for x in actual if not math.isnan(x) and x != key]
-            if expected_filtered != actual_filtered:
-                num_small = sum(x < key for x in expected_filtered)
-                if sorted(expected_filtered[:num_small]) == sorted(actual_filtered[:num_small]) and\
-                sorted(expected_filtered[num_small:]) == sorted(actual_filtered[num_small:]):
-                    # AIC 2: Order of elements
-                    AIC.add("order")
-            else:
-                if any(math.isnan(x) for x in data):
-                    # AIC 3: Position of nan in result
-                    AIC.add("nan position")
-                if key in data:
-                    # AIC 4: Position of key in result
-                    AIC.add("key position")
-        if not AIC:
-            AIC.add("unknown")
-                
-    return AIC
+def main():
+    nan = float("nan")
+    
+    result = {
+        "handle_nan": False,
+        "nan_key": {
+            "simplest": False,
+            "inductive": False
+        },
+        "nan_in_list": {
+            "simplest": False,
+            "inductive": False
+        },
+        "equal_values": {
+            "simplest": False,
+            "inductive": False
+        },
+    }
+    
+     # nan key
+    
+    # simplest case
+    try:
+        result["nan_key"]["simplest"] = reorder([0, 1], nan) == sol([0, 1], nan)
+    except:
+        result["nan_key"]["simplest"] = False
+    
+    # inductive
+    @given(st.lists(st.floats(allow_nan=False), min_size=2, max_size=5).filter(lambda x: len(set(x)) > 1)) # at least two distinct values so that order matters
+    @settings(suppress_health_check=(list(HealthCheck)))
+    def test_inductive_nan_key(data):
+        assert reorder(data, nan) == sol(data, nan)
+    
+    try:
+        test_inductive_nan_key()
+    except:
+        result["nan_key"]["inductive"] = False
+        
+        
+    # nan in list
+    
+    # simplest case
+    try:
+        result["nan_in_list"]["simplest"] = reorder([2, nan, 0], 1) == sol([2, nan, 0], 1)
+    except:
+        result["nan_in_list"]["simplest"] = False
+        
+    # inductive
+    @st.composite
+    def construct(draw):
+        data = draw(st.lists(st.floats(), min_size=2, max_size=5).filter(lambda x: any(math.isnan(i) for i in x)))
+        key = draw(st.floats(allows_nan=False).filter(lambda x: x not in data))
+        return data, key
+    
+    _data = st.shared(construct().map(lambda x: x[0]), key="e")
+    _key = st.shared(construct().map(lambda x: x[1]), key="e")
+    
+    @given(_data, _key)
+    @settings(suppress_health_check=(list(HealthCheck)))
+    def test_inductive_nan_in_list(data, key):
+        assert reorder(data, key) == sol(data, key)
+        
+    try:
+        test_inductive_nan_in_list()
+    except:
+        result["nan_in_list"]["inductive"] = False
+        
+    # equal values
+    
+    # simplest case
+    try:
+        result["equal_values"]["simplest"] = reorder([2, 1, 0], 1) == sol([2, 1, 0], 1)
+    except:
+        result["equal_values"]["simplest"] = False
+        
+    # inductive
+    @st.composite
+    def construct(draw):
+        data = draw(st.lists(st.floats(allow_nan=False), min_size=2, max_size=5))
+        key = draw(st.sampled_from(data))
+        return data, key
+
+    _data = st.shared(construct().map(lambda x: x[0]), key="e")
+    _key = st.shared(construct().map(lambda x: x[1]), key="e")
+    
+    @given(_data, _key)
+    @settings(suppress_health_check=(list(HealthCheck)))
+    def test_inductive_equal_values(data, key):
+        assert reorder(data, key) == sol(data, key)
+        
+    try:
+        test_inductive_equal_values()
+    except:
+        result["equal_values"]["inductive"] = False
+
+    return result
+
 
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) > 1:
-        data = eval(sys.argv[1])
-        try:
-            print(sorted(_eval(*data)))
-        except:
-            pass
-    
-    else:
-        score = set()
-
-        @example(data=[-1, -1], key=float('nan'))
-        @example(data=[5, 3.0, 2, 4, 1, 3], key=3)
-        @example(data=[float('nan'), 5, float('nan'), float('nan'), 1, float('nan')], key=3)
-        @example(data=[5, float('inf'), 1, 4, 2, float('inf')], key=float('inf'))
-        @example(data=[5, float('-inf'), 1, 4, 2, float('-inf')], key=float('-inf'))
-        @settings(max_examples=2000)
-        @given(st.lists(st.floats() | st.integers(), max_size=7), st.floats() | st.integers())
-        def test(data: list, key):
-            global score
-            try:
-                score.update(_eval(data, key))
-            except:
-                pass
-
-        test()
-        print(sorted(list(score)))
+    print(main())

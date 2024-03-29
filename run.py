@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import importlib
 
-for Q in [1, 2, 3]: # range(1, 6):
+for Q in range(1, 6):
     # get all files in the directories code/q{Q}/buggy and code/q{Q}/ok
     submissions = []
     if os.path.exists(f"code/q{Q}/buggy"):
