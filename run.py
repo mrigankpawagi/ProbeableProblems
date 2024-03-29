@@ -2,13 +2,15 @@ import os
 import pandas as pd
 import importlib
 
-for Q in [1, 3]: # range(1, 6):
+for Q in [1, 2, 3]: # range(1, 6):
     # get all files in the directories code/q{Q}/buggy and code/q{Q}/ok
     submissions = []
-    for f in os.listdir(f"code/q{Q}/buggy"):
-        submissions.append({"filename": f, "status": "buggy"})
-    for f in os.listdir(f"code/q{Q}/ok"):
-        submissions.append({"filename": f, "status": "ok"})
+    if os.path.exists(f"code/q{Q}/buggy"):
+        for f in os.listdir(f"code/q{Q}/buggy"):
+            submissions.append({"filename": f, "status": "buggy"})
+    if os.path.exists(f"code/q{Q}/ok"):
+        for f in os.listdir(f"code/q{Q}/ok"):
+            submissions.append({"filename": f, "status": "ok"})
     
     for submission in submissions:
         # get the submission information

@@ -5,7 +5,7 @@ https://codecheck.io/files/2306111051595nfjvjxiu7a73md5cn4saj9
 """
 
 from submission import first_positive_integer
-from hypothesis import given, settings, strategies as st, example
+from hypothesis import given, settings, HealthCheck, strategies as st
 
 def sol(s: str) -> int:
     s = s.split()
@@ -18,68 +18,74 @@ def sol(s: str) -> int:
                 else:
                     break
             return result
-    return 0
+    return 0  
 
-def _eval(s: str) -> set[str]:
-    """
-    Return the AIC that the student's solution misses.
-    """
-    AIC = set()
-    expected = sol(s)
-    actual = first_positive_integer(s)
 
-    if expected != actual:
-        # AIC 1: No positive digits
-        if all(d not in '123456789' for d in s):
-            AIC.add("no positive")
-        else:  # AIC 1 is a special case all by itself
-            expected_str = str(expected)
-            i = s.index(expected_str)
-            s_no_prefix = s[i:]
-            s_no_suffix = s[:i + len(expected_str)]
-
-            # AIC 2: Something in the prefix is causing a problem
-            if first_positive_integer(s_no_prefix) == actual:
-                AIC.add("prefix")
-            # AIC 3: Something in the suffix is causing a problem
-            if first_positive_integer(s_no_suffix) == actual:
-                AIC.add("suffix")
-            # AIC 4: More than one digit in expected
-            actual_str = str(actual)
-            if actual_str in expected_str and len(actual_str) < len(expected_str) and len(expected_str) > 1:
-                AIC.add("multi digit")
-
-        if not AIC:
-            AIC.add("unknown")
-
-    return AIC       
-        
-if __name__ == "__main__":
-    import sys
+def main():
+    result = {
+        "return_int": True,
+        "starts_with_nonzero_digit": True,
+        "longest_integer_prefix": True,
+        "first_word_starts_with_nonzero": True,
+        "residue": True,
+    }
     
-    if len(sys.argv) > 1:
-        data = eval(sys.argv[1])
+    Digits = '0123456789'
+    Symbols = '+-.,\t\n'
+
+
+    def check(s: str, bug: str):
         try:
-            print(sorted(_eval(*data)))
+            res = first_positive_integer(s)
+            if not isinstance(res, int):
+                result["return_int"] = False
+                res = int(res)
+            
+            assert res == sol(s)
         except:
-            pass
-    
-    else:
-        score = set()
+            result[bug] = False
 
-        @example(s='')
-        @example(s='-7')
-        @example(s='.7')
-        @example(s='07')
-        @example(s='1481.9 2')
-        @settings(max_examples=2000)
-        @given(st.text(alphabet="-., b013", max_size=7))
-        def test(s: str):
-            global score
-            try:
-                score.update(_eval(s))
-            except:
-                pass
 
-        test()
-        print(sorted(list(score)))
+    def starts_with_nonzero_digit():
+        check('', 'starts_with_nonzero_digit')
+        check('0', 'starts_with_nonzero_digit')
+        for d in Digits[1:]:
+            check(d, 'starts_with_nonzero_digit')
+            check('0' + d, 'starts_with_nonzero_digit')
+            for s in Symbols:
+                check(s + d, 'starts_with_nonzero_digit')
+        for s in Symbols:
+            check(s, 'starts_with_nonzero_digit')
+
+
+    @given(
+        st.text(alphabet=Digits[1:], min_size=1, max_size=4),
+        st.text(alphabet=Digits + Symbols, min_size=0, max_size=3)
+    )
+    def longest_integer_prefix(s, t):
+        check(s + t, 'longest_integer_prefix')
+
+
+    @given(
+        st.lists(st.text(alphabet=Digits + Symbols, min_size=1, max_size=1), min_size=2, max_size=5)
+    )
+    def first_word_starts_with_nonzero_digit(words):
+        check(' '.join(words), 'first_word_starts_with_nonzero')
+
+
+    @given(
+        st.lists(st.text(alphabet=Digits + Symbols, min_size=1, max_size=5), min_size=0, max_size=5)
+    )
+    def check_all(words):
+        check(' '.join(words), 'residue')
+        
+    starts_with_nonzero_digit()
+    longest_integer_prefix()
+    first_word_starts_with_nonzero_digit()
+    check_all()
+  
+    return result
+
+
+if __name__ == "__main__":
+    print(main())
