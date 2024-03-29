@@ -27,6 +27,10 @@ def main():
         "starts_with_nonzero_digit": True,
         "longest_integer_prefix": True,
         "first_word_starts_with_nonzero": True,
+        "no_integer": {
+            "simplest": True,
+            "inductive": True
+        }, 
         "residue": True,
     }
     
@@ -83,6 +87,37 @@ def main():
     longest_integer_prefix()
     first_word_starts_with_nonzero_digit()
     check_all()
+    
+    # no integer
+    
+    # simplest case
+    try:
+        _res = first_positive_integer('')
+        if not isinstance(_res, int):
+            result["no_integer"]["simplest"] = False
+            _res = int(_res)
+            
+        result["no_integer"]["simplest"] = _res == sol('')
+    except:
+        result["no_integer"]["simplest"] = False
+        
+    # inductive
+    @given(
+        st.text(alphabet=Digits[1:], min_size=1, max_size=4),
+        st.text(alphabet=Digits[0] + Symbols, min_size=0, max_size=3)
+    )
+    def longest_integer_prefix(s, t):
+        _res = first_positive_integer(t + s)
+        if not isinstance(_res, int):
+            result["no_integer"]["inductive"] = False
+            _res = int(_res)
+            
+        assert _res == sol(t + s)
+        
+    try:
+        longest_integer_prefix()
+    except:
+        result["no_integer"]["inductive"] = False
   
     return result
 

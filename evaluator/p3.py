@@ -42,7 +42,7 @@ def main():
     
     # inductive
     @given(st.lists(st.integers(min_value=-10, max_value=10), min_size=2, max_size=5).filter(lambda x: sum(sol(x) == x.count(n) for n in set(x)) > 1))
-    @settings(suppress_health_check=(HealthCheck.all()))
+    @settings(suppress_health_check=(list(HealthCheck)))
     def test_inductive_break_ties(data):
         assert min_freq(data) == sol(data)
     
